@@ -1,4 +1,4 @@
-/* Reset and Base Styles */
+/* Reset and Base Styles - Updated for larger logos */
 * {
     margin: 0;
     padding: 0;
@@ -61,12 +61,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 70px;
+    height: 120px;
 }
 
 .nav-logo .logo {
-    height: 40px;
-    width: auto;
+    height: 100px !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: 100px !important;
+    object-fit: contain !important;
+    border: 2px solid red !important; /* Debug - remover depois */
 }
 
 .nav-menu {
@@ -115,7 +119,7 @@ body {
 
 /* Hero Section */
 .hero {
-    padding: 120px 0 80px;
+    padding: 150px 0 80px;
     background: linear-gradient(135deg, var(--light-cream) 0%, #ffffff 100%);
     min-height: 100vh;
     display: flex;
@@ -493,7 +497,9 @@ body {
 }
 
 .footer-logo .logo {
-    height: 50px;
+    height: 120px !important;
+    width: auto !important;
+    max-width: none !important;
     margin-bottom: 20px;
 }
 
@@ -590,7 +596,7 @@ body {
 
 @media (max-width: 480px) {
     .hero {
-        padding: 100px 0 60px;
+        padding: 140px 0 60px;
     }
     
     .hero-brand {

@@ -1,0 +1,25 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y1="0%">
+      <stop offset="0%" style="stop-color:#c2767b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#5a1e2e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Ícone - Arco com G estilizado -->
+  <g transform="translate(10, 10)">
+    <!-- Arco principal -->
+    <path d="M0 40 L0 10 Q0 0 10 0 L30 0 Q40 0 40 10 L40 40 Z" fill="#c2767b"/>
+    
+    <!-- G estilizado interno -->
+    <path d="M15 25 Q15 15 25 15 L30 15 Q35 15 35 20 L35 25 Q35 30 30 30 L25 30 L25 25 L30 25 L30 20 L25 20 Q20 20 20 25 Q20 30 25 30" fill="white"/>
+    
+    <!-- Ponto decorativo -->
+    <circle cx="12" cy="20" r="2" fill="white"/>
+  </g>
+  
+  <!-- Texto GlowMuse -->
+  <text x="60" y="35" font-family="Playfair Display, serif" font-size="28" font-weight="bold" fill="url(#textGradient)">
+    GlowMuse
+  </text>
+</svg>
