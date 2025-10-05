@@ -1,4 +1,4 @@
-/* Reset and Base Styles - Fixed why-now button centering - v2.5 */
+/* Reset and Base Styles - Added footer links styling - v2.6 */
 * {
     margin: 0;
     padding: 0;
@@ -597,6 +597,28 @@ body {
     margin-right: auto;
 }
 
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+.footer-links a:hover {
+    color: var(--primary-pink);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
 .footer-bottom {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 30px;
@@ -761,6 +783,16 @@ body {
     
     .lead-form {
         padding: 30px 20px;
+    }
+    
+    .footer-links {
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+        padding: 6px 12px;
+        font-size: 0.95rem;
     }
 }
 
@@ -954,5 +986,16 @@ body {
     
     .highlight-text p {
         font-size: 0.85rem;
+    }
+    
+    .footer-links {
+        gap: 15px;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .footer-links a {
+        padding: 8px 16px;
+        font-size: 0.9rem;
     }
 }

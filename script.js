@@ -11,6 +11,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Handle CTA links in navbar
+  const ctaLinks = document.querySelectorAll('a[href="#contato"], .nav-cta');
+  ctaLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      scrollToForm();
+    });
+  });
+
   // Smooth scrolling for navigation links
   const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
   navLinks.forEach((link) => {
@@ -180,23 +189,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Scroll to form function
 function scrollToForm() {
-  console.log("scrollToForm called"); // Debug
-  const formSection = document.getElementById("contato");
-  console.log("formSection:", formSection); // Debug
+  try {
+    console.log("scrollToForm called"); // Debug
 
-  if (!formSection) {
-    console.error("Form section not found!");
-    return;
+    // Try multiple selectors to find the form section
+    let formSection = document.getElementById("contato");
+
+    if (!formSection) {
+      formSection = document.querySelector(".cta-section");
+    }
+
+    if (!formSection) {
+      formSection = document.querySelector('section[class*="cta"]');
+    }
+
+    console.log("formSection found:", formSection); // Debug
+
+    if (!formSection) {
+      console.error(
+        "Form section not found! Available sections:",
+        Array.from(document.querySelectorAll("section")).map(
+          (s) => s.id || s.className
+        )
+      );
+      return;
+    }
+
+    const header = document.querySelector(".header");
+    const headerHeight = header ? header.offsetHeight : 120;
+    const targetPosition = formSection.offsetTop - headerHeight - 20;
+
+    console.log("Header height:", headerHeight);
+    console.log("Form section top:", formSection.offsetTop);
+    console.log("Scrolling to position:", targetPosition);
+
+    window.scrollTo({
+      top: Math.max(0, targetPosition),
+      behavior: "smooth",
+    });
+
+    console.log("Scroll initiated successfully");
+  } catch (error) {
+    console.error("Error in scrollToForm:", error);
+
+    // Fallback: try to scroll to the bottom of the page
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth",
+    });
   }
-
-  const headerHeight = document.querySelector(".header").offsetHeight;
-  const targetPosition = formSection.offsetTop - headerHeight - 20;
-  console.log("Scrolling to position:", targetPosition); // Debug
-
-  window.scrollTo({
-    top: targetPosition,
-    behavior: "smooth",
-  });
 }
 
 // Add mobile menu styles
