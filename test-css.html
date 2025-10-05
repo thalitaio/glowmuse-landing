@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teste CSS - GlowMuse</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        padding: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 2px solid #c2767b;
+      }
+      .test-title {
+        color: #5a1e2e;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-section">
+      <div class="test-title">
+        Teste 1: Hero Image com CSS (sem estilos inline)
+      </div>
+      <div class="hero-image">
+        <img
+          src="assets/hero-image.png"
+          alt="Teste CSS"
+          class="hero-photo-circle"
+        />
+      </div>
+    </div>
+
+    <div class="test-section">
+      <div class="test-title">
+        Teste 2: Hero Image com estilos inline (para comparação)
+      </div>
+      <div class="hero-image">
+        <img
+          src="assets/hero-image.png"
+          alt="Teste CSS"
+          class="hero-photo-circle"
+          style="
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          "
+        />
+      </div>
+    </div>
+
+    <div class="test-section">
+      <div class="test-title">Informações do CSS aplicado:</div>
+      <p>
+        Se o CSS estiver funcionando, ambas as imagens devem ter o mesmo tamanho
+        (300px) e aparência.
+      </p>
+      <p>
+        Se apenas a segunda imagem estiver com o tamanho correto, significa que
+        os estilos inline ainda têm prioridade.
+      </p>
+    </div>
+
+    <script>
+      // Verificar se o CSS está sendo aplicado
+      const img1 = document.querySelector(".test-section:nth-child(2) img");
+      const img2 = document.querySelector(".test-section:nth-child(3) img");
+
+      const style1 = window.getComputedStyle(img1);
+      const style2 = window.getComputedStyle(img2);
+
+      console.log("Imagem 1 (CSS):", {
+        width: style1.width,
+        height: style1.height,
+        borderRadius: style1.borderRadius,
+      });
+
+      console.log("Imagem 2 (Inline):", {
+        width: style2.width,
+        height: style2.height,
+        borderRadius: style2.borderRadius,
+      });
+    </script>
+  </body>
+</html>
