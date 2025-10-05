@@ -180,9 +180,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Scroll to form function
 function scrollToForm() {
+  console.log("scrollToForm called"); // Debug
   const formSection = document.getElementById("contato");
+  console.log("formSection:", formSection); // Debug
+
+  if (!formSection) {
+    console.error("Form section not found!");
+    return;
+  }
+
   const headerHeight = document.querySelector(".header").offsetHeight;
   const targetPosition = formSection.offsetTop - headerHeight - 20;
+  console.log("Scrolling to position:", targetPosition); // Debug
 
   window.scrollTo({
     top: targetPosition,
