@@ -177,6 +177,12 @@ app.post("/api/leads", validateLead, async (req, res) => {
     ip: req.ip,
     userAgent: req.get("User-Agent"),
   });
+  
+  console.log("Environment check:", {
+    NODE_ENV: process.env.NODE_ENV,
+    DATABASE_URL: process.env.DATABASE_URL ? "Set" : "Not set",
+    PORT: process.env.PORT
+  });
 
   try {
     // Check validation errors
@@ -189,6 +195,11 @@ app.post("/api/leads", validateLead, async (req, res) => {
         errors: errors.array(),
       });
     }
+
+    // Test database connection
+    console.log("Testing database connection...");
+    const testConnection = await pool.query("SELECT 1");
+    console.log("Database connection test successful:", testConnection.rows[0]);
 
     const { name, email, phone } = req.body;
     console.log("Processing lead:", { name, email, phone });
@@ -287,7 +298,11 @@ app.post("/api/leads", validateLead, async (req, res) => {
       stack: error.stack,
       body: req.body,
       timestamp: new Date().toISOString(),
+      errorCode: error.code,
+      errorName: error.name
     });
+    
+    console.error("Full error object:", error);
 
     // Check if it's a database connection error
     if (error.code === "ECONNREFUSED" || error.code === "ENOTFOUND") {
