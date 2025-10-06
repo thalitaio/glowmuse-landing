@@ -26,8 +26,20 @@ const pool = new Pool({
 // Test database connection
 pool
   .connect()
-  .then(() => console.log("✅ Database connected successfully"))
-  .catch((err) => console.error("❌ Database connection error:", err));
+  .then((client) => {
+    console.log("✅ Database connected successfully");
+    client.release();
+    
+    // Test if leads table exists
+    return pool.query("SELECT COUNT(*) FROM leads");
+  })
+  .then((result) => {
+    console.log("✅ Leads table accessible, current count:", result.rows[0].count);
+  })
+  .catch((err) => {
+    console.error("❌ Database connection error:", err);
+    console.error("Database URL:", process.env.DATABASE_URL ? "Set" : "Not set");
+  });
 
 // Security middleware
 app.use(
@@ -57,9 +69,25 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS configuration
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://glowmuse-landing.onrender.com",
+  "https://glowmuse.com.br",
+  "https://www.glowmuse.com.br"
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
@@ -138,10 +166,17 @@ app.get("/api/health", (req, res) => {
 
 // Lead submission endpoint
 app.post("/api/leads", validateLead, async (req, res) => {
+  console.log("Lead submission request received:", {
+    body: req.body,
+    ip: req.ip,
+    userAgent: req.get('User-Agent')
+  });
+
   try {
     // Check validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log("Validation errors:", errors.array());
       return res.status(400).json({
         success: false,
         message: "Dados inválidos",
@@ -150,6 +185,7 @@ app.post("/api/leads", validateLead, async (req, res) => {
     }
 
     const { name, email, phone } = req.body;
+    console.log("Processing lead:", { name, email, phone });
 
     // Check if lead already exists
     const existingLead = await pool.query(
@@ -240,7 +276,29 @@ app.post("/api/leads", validateLead, async (req, res) => {
       leadId: leadId,
     });
   } catch (error) {
-    console.error("Database error:", error);
+    console.error("Lead submission error:", {
+      error: error.message,
+      stack: error.stack,
+      body: req.body,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Check if it's a database connection error
+    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
+      return res.status(500).json({
+        success: false,
+        message: "Erro de conexão com o banco de dados. Tente novamente em alguns minutos.",
+      });
+    }
+    
+    // Check if it's a validation error
+    if (error.code === '23505') { // Unique constraint violation
+      return res.status(409).json({
+        success: false,
+        message: "Este e-mail já está cadastrado em nossa lista de espera.",
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: "Erro interno do servidor. Tente novamente.",
