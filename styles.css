@@ -1082,12 +1082,14 @@ body {
     }
     
     .hero-image {
-        display: none !important;
+        max-width: 200px;
+        margin: 20px auto;
     }
     
     .hero-image img.hero-photo-circle,
     .hero-photo-circle {
-        display: none !important;
+        max-width: 200px !important;
+        height: 200px !important;
     }
     
     .hero-brand {
@@ -1169,12 +1171,14 @@ body {
     }
     
     .hero-image {
-        display: none !important;
+        max-width: 200px;
+        margin: 20px auto;
     }
     
     .hero-image img.hero-photo-circle,
     .hero-photo-circle {
-        display: none !important;
+        max-width: 200px !important;
+        height: 200px !important;
     }
     
     .hero-brand {
