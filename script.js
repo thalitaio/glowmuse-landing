@@ -73,9 +73,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const digits = data.phone.replace(/\D/g, "");
         // Format as (XX) XXXXX-XXXX
         if (digits.length === 11) {
-          data.phone = `(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-${digits.substring(7)}`;
+          data.phone = `(${digits.substring(0, 2)}) ${digits.substring(
+            2,
+            7
+          )}-${digits.substring(7)}`;
         } else if (digits.length === 10) {
-          data.phone = `(${digits.substring(0, 2)}) ${digits.substring(2, 6)}-${digits.substring(6)}`;
+          data.phone = `(${digits.substring(0, 2)}) ${digits.substring(
+            2,
+            6
+          )}-${digits.substring(6)}`;
         }
       }
 
@@ -149,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Reset button (moved inside try-catch to ensure variables are in scope)
         const submitButton = leadForm.querySelector(".form-submit");
         if (submitButton) {
-          submitButton.textContent = "Entrar na lista de espera";
+          submitButton.textContent = "Garantir Acesso Exclusivo";
           submitButton.disabled = false;
         }
 
