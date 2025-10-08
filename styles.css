@@ -278,14 +278,14 @@ body {
     justify-content: center;
     align-items: center;
     width: 150%;
-    max-width: 400px;
+    max-width: 500px;
     margin: 0 auto;
 }
 
 .hero-image img.hero-photo-circle {
     width: 100% !important;
-    max-width: 400px !important;
-    height: 400px !important;
+    max-width: 500px !important;
+    height: 500px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
@@ -296,8 +296,8 @@ body {
 
 .hero-photo-circle {
     width: 100% !important;
-    max-width: 400px !important;
-    height: 400px !important;
+    max-width: 500px !important;
+    height: 500px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     box-shadow: 0 20px 60px rgba(139, 21, 56, 0.3), 0 0 0 4px var(--rich-gold), 0 0 0 8px rgba(212, 175, 55, 0.2) !important;
