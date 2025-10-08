@@ -1,5 +1,8 @@
 // Smooth scrolling and form handling
+console.log("Script.js loaded!");
+
 document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM loaded, setting up forms...");
   // Mobile menu toggle
   const navToggle = document.querySelector(".nav-toggle");
   const navMenu = document.querySelector(".nav-menu");
@@ -52,15 +55,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Form submission
+  // Form submission - Handle both forms
   const leadForm = document.getElementById("leadForm");
+  const leadForm2 = document.getElementById("leadForm2");
   const successMessage = document.getElementById("successMessage");
+  const successMessage2 = document.getElementById("successMessage2");
 
-  if (leadForm) {
-    leadForm.addEventListener("submit", async function (e) {
+  // Function to handle form submission
+  function handleFormSubmission(form, successMsg) {
+    if (!form) {
+      console.error("Form not found:", form);
+      return;
+    }
+
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      const formData = new FormData(leadForm);
+      const formData = new FormData(form);
       const data = {
         name: formData.get("name"),
         email: formData.get("email"),
@@ -91,6 +102,13 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
+      // Name validation (only letters and spaces)
+      const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
+      if (!nameRegex.test(data.name)) {
+        alert("Por favor, insira apenas letras no nome.");
+        return;
+      }
+
       // Email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(data.email)) {
@@ -109,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       try {
         // Show loading state
-        const submitButton = leadForm.querySelector(".form-submit");
+        const submitButton = form.querySelector(".form-submit");
         const originalText = submitButton.textContent;
         submitButton.textContent = "Enviando...";
         submitButton.disabled = true;
@@ -125,9 +143,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (response.ok) {
           // Success
-          leadForm.style.display = "none";
-          successMessage.style.display = "block";
-          successMessage.scrollIntoView({ behavior: "smooth" });
+          const result = await response.json();
+          form.style.display = "none";
+          successMsg.style.display = "block";
+          successMsg.scrollIntoView({ behavior: "smooth" });
 
           // Track conversion (Google Analytics, Facebook Pixel, etc.)
           if (typeof gtag !== "undefined") {
@@ -153,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Error:", error);
 
         // Reset button (moved inside try-catch to ensure variables are in scope)
-        const submitButton = leadForm.querySelector(".form-submit");
+        const submitButton = form.querySelector(".form-submit");
         if (submitButton) {
           submitButton.textContent = "Garantir Acesso Exclusivo";
           submitButton.disabled = false;
@@ -167,10 +186,21 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Phone input formatting
+  // Apply form handling to both forms
+  if (leadForm) {
+    handleFormSubmission(leadForm, successMessage);
+  }
+
+  if (leadForm2) {
+    handleFormSubmission(leadForm2, successMessage2);
+  }
+
+  // Phone input formatting for both forms
   const phoneInput = document.getElementById("phone");
-  if (phoneInput) {
-    phoneInput.addEventListener("input", function (e) {
+  const phoneInput2 = document.getElementById("phone2");
+
+  function formatPhoneInput(input) {
+    input.addEventListener("input", function (e) {
       let value = e.target.value.replace(/\D/g, "");
       if (value.length >= 2) {
         value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
@@ -180,6 +210,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       e.target.value = value;
     });
+  }
+
+  if (phoneInput) {
+    formatPhoneInput(phoneInput);
+  }
+
+  if (phoneInput2) {
+    formatPhoneInput(phoneInput2);
   }
 
   // Intersection Observer for animations
