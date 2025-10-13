@@ -484,6 +484,135 @@ body {
     font-weight: 500;
 }
 
+/* About GlowMuse Section */
+.about-glowmuse {
+    background: linear-gradient(135deg, var(--elegant-cream) 0%, #f8f6f3 100%);
+    padding: 80px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.about-glowmuse::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23e8e4e0" opacity="0.3"/><circle cx="75" cy="75" r="1" fill="%23e8e4e0" opacity="0.3"/><circle cx="50" cy="10" r="0.5" fill="%23e8e4e0" opacity="0.2"/><circle cx="10" cy="60" r="0.5" fill="%23e8e4e0" opacity="0.2"/><circle cx="90" cy="40" r="0.5" fill="%23e8e4e0" opacity="0.2"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.about-glowmuse-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.about-glowmuse-text {
+    padding-left: 20px;
+}
+
+.about-glowmuse-title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--primary-burgundy);
+    margin-bottom: 30px;
+    text-shadow: 0 2px 4px rgba(139, 21, 56, 0.1);
+    letter-spacing: -0.5px;
+}
+
+.about-glowmuse-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-burgundy), var(--rich-gold));
+    margin-top: 15px;
+    border-radius: 2px;
+}
+
+.about-glowmuse-description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--charcoal-gray);
+    margin-bottom: 20px;
+    font-weight: 400;
+}
+
+.about-glowmuse-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.glowmuse-logo-icon {
+    max-width: 300px;
+    height: auto;
+    filter: drop-shadow(0 8px 25px rgba(139, 21, 56, 0.15));
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.glowmuse-logo-icon:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 12px 35px rgba(139, 21, 56, 0.25));
+}
+
+/* Responsive Design for About GlowMuse */
+@media (max-width: 768px) {
+    .about-glowmuse {
+        padding: 60px 0;
+    }
+    
+    .about-glowmuse-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+    }
+    
+    .about-glowmuse-text {
+        padding-left: 0;
+    }
+    
+    .about-glowmuse-title {
+        font-size: 2rem;
+        margin-bottom: 25px;
+    }
+    
+    .about-glowmuse-description {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+    
+    .glowmuse-logo-icon {
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-glowmuse {
+        padding: 50px 0;
+    }
+    
+    .about-glowmuse-content {
+        gap: 30px;
+    }
+    
+    .about-glowmuse-title {
+        font-size: 1.8rem;
+    }
+    
+    .glowmuse-logo-icon {
+        max-width: 200px;
+    }
+}
+
 /* Features Section */
 .features {
     padding: var(--section-padding);
