@@ -216,36 +216,36 @@ app.post("/api/leads", validateLead, async (req, res) => {
               .sendMail({
                 from: process.env.EMAIL_USER,
                 to: email,
-                subject: "Bem-vinda à lista de espera da GlowMuse! 🎉",
+                subject: "Bem-vinda à lista de espera da GlowMuse!",
                 html: `
-                  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                    <div style="background: linear-gradient(135deg, #c2767b, #5a1e2e); padding: 40px; text-align: center; color: white;">
-                      <h1 style="margin: 0; font-size: 2rem;">GlowMuse</h1>
-                      <p style="margin: 10px 0 0 0; opacity: 0.9;">O novo espaço para acompanhantes no Brasil</p>
-                    </div>
-                    <div style="padding: 40px; background: #faf3ef;">
-                      <h2 style="color: #5a1e2e; margin-bottom: 20px;">Olá ${name}!</h2>
-                      <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
-                        Obrigada por se juntar à nossa lista de espera! Você está entre as primeiras pessoas a conhecer a GlowMuse.
-                      </p>
-                      <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
-                        Em breve você receberá:
-                      </p>
-                      <ul style="color: #4a4a4a; line-height: 1.8;">
-                        <li>🎯 Acesso antecipado à plataforma</li>
-                        <li>💎 Condições especiais de lançamento</li>
-                        <li>📧 Atualizações exclusivas sobre o desenvolvimento</li>
-                        <li>🤝 Suporte direto da nossa equipe</li>
-                      </ul>
-                      <p style="color: #4a4a4a; line-height: 1.6; margin-top: 30px;">
-                        Sua profissão merece respeito. Sua história merece espaço.
-                      </p>
-                      <p style="color: #c2767b; font-weight: 600; margin-top: 20px;">
-                        Equipe GlowMuse
-                      </p>
-                    </div>
-                  </div>
-                `,
+                          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                              <div style="background: #faf3ef;; padding: 40px; text-align: center; color: white;">
+                                  <img src="https://glowmuse.com.br/assets/logo.png" alt="GlowMuse" style="max-width: 200px; height: auto; margin-bottom: 5px;">
+                                  <h3 style="margin: 5px 0 0 0; color: #5a1e2e">O novo espaço para acompanhantes no Brasil.</h3>
+                              </div>
+                              <div style="padding: 40px; background: #faf3ef;">
+                                  <h2 style="color: #5a1e2e; margin-bottom: 20px;">Olá, ${name}!</h2>
+                                  <p style="color:rgb(255, 252, 252); line-height: 1.6; margin-bottom: 20px;">
+                                      Obrigada por se juntar à nossa lista de espera! Você está entre as primeiras pessoas a conhecer a GlowMuse.
+                                  </p>
+                                  <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
+                                      Em breve você receberá:
+                                  </p>
+                                  <ul style="color: #4a4a4a; line-height: 1.8;">
+                                      <li>Acesso antecipado à plataforma</li>
+                                      <li>Condições especiais de lançamento</li>
+                                      <li>Atualizações exclusivas sobre o desenvolvimento</li>
+                                      <li>Suporte direto da nossa equipe</li>
+                                  </ul>
+                                  <p style="color: #4a4a4a; line-height: 1.6; margin-top: 30px;">
+                                      Sua profissão merece respeito. Sua história merece espaço.
+                                  </p>
+                                  <p style="color: #c2767b; font-weight: 600; margin-top: 20px;">
+                                      Equipe GlowMuse
+                                  </p>
+                              </div>
+                          </div>
+                      `,
               })
               .catch((emailError) => {
                 console.error("Email sending error:", emailError);
