@@ -226,37 +226,77 @@ app.post("/api/leads", validateLead, async (req, res) => {
 
     const leadId = result.rows[0].id;
 
-    // Send welcome email - TEMPORARILY DISABLED FOR DEBUGGING
-    console.log("Email sending DISABLED for debugging - focusing on database");
+    // Send welcome email
+    console.log("Attempting to send welcome email to:", email);
+    
+    try {
+      console.log("Creating email transporter...");
+      console.log("Email config:", {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS ? "***" : "Not set",
+      });
 
-    // try {
-    //   console.log("Creating email transporter...");
-    //   console.log("Email config:", {
-    //     user: process.env.EMAIL_USER,
-    //     pass: process.env.EMAIL_PASS ? "***" : "Not set",
-    //   });
-
-    //   // Test Gmail connection first
-    //   console.log("Testing Gmail connection...");
-    //   await transporter.verify();
-    //   console.log("Gmail connection verified successfully!");
-
-    //   await transporter.sendMail({
-    //     from: process.env.EMAIL_USER,
-    //     to: email,
-    //     subject: "Bem-vinda à lista de espera da GlowMuse! 🎉",
-    //     html: `Welcome email content...`
-    //   });
-    //   console.log("Welcome email sent successfully to:", email);
-    // } catch (emailError) {
-    //   console.error("Email sending error details:", {
-    //     message: emailError.message,
-    //     code: emailError.code,
-    //     response: emailError.response,
-    //     stack: emailError.stack,
-    //   });
-    //   // Don't fail the request if email fails
-    // }
+      // Send email without connection test (faster)
+      console.log("Sending welcome email...");
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Bem-vinda à lista de espera da GlowMuse! 🎉",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #6E1F28 0%, #CDAA6D 100%); color: white; border-radius: 10px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <img src="https://glowmuse.com.br/assets/logo.png" alt="GlowMuse" style="max-width: 200px; height: auto; margin-bottom: 15px;">
+              <h1 style="color: #CDAA6D; margin: 0; font-size: 28px;">Bem-vinda à GlowMuse!</h1>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+              <p style="font-size: 18px; line-height: 1.6; margin: 0 0 20px 0;">
+                Olá <strong>${name}</strong>! 🎉
+              </p>
+              
+              <p style="font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                Obrigada por se juntar à nossa lista de espera! Você está entre as primeiras a ter acesso exclusivo à plataforma que vai revolucionar o mercado de acompanhantes de luxo no Brasil.
+              </p>
+              
+              <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 6px; margin: 20px 0;">
+                <h3 style="color: #CDAA6D; margin: 0 0 15px 0; font-size: 20px;">O que você pode esperar:</h3>
+                <ul style="margin: 0; padding-left: 20px; font-size: 16px; line-height: 1.8;">
+                  <li>Plataforma exclusiva e discreta</li>
+                  <li>Clientes de alto padrão verificados</li>
+                  <li>Ferramentas profissionais de marketing</li>
+                  <li>Suporte 24/7 especializado</li>
+                  <li>Comunidade de profissionais de sucesso</li>
+                </ul>
+              </div>
+              
+              <p style="font-size: 16px; line-height: 1.6; margin: 20px 0;">
+                <strong>Próximos passos:</strong><br>
+                • Aguarde nosso convite exclusivo (em breve!)<br>
+                • Prepare-se para uma experiência única<br>
+                • Siga nossas redes sociais para novidades
+              </p>
+            </div>
+            
+            <div style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+              <p style="font-size: 14px; margin: 0; opacity: 0.9;">
+                Com carinho,<br>
+                <strong>Equipe GlowMuse</strong>
+              </p>
+            </div>
+          </div>
+        `,
+      });
+      console.log("Welcome email sent successfully to:", email);
+    } catch (emailError) {
+      console.error("Email sending error details:", {
+        message: emailError.message,
+        code: emailError.code,
+        response: emailError.response,
+        stack: emailError.stack,
+      });
+      // Don't fail the request if email fails
+      console.log("Continuing without email...");
+    }
 
     // Send notification to admin - DISABLED FOR TESTING
     console.log("Admin email sending DISABLED for testing");
@@ -396,7 +436,7 @@ app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 Frontend: http://localhost:${PORT}`);
   console.log(`🔗 API: http://localhost:${PORT}/api`);
-  
+
   // Create table on startup
   try {
     await createLeadsTable();
