@@ -228,7 +228,7 @@ app.post("/api/leads", validateLead, async (req, res) => {
 
     // Send welcome email - TEMPORARILY DISABLED FOR DEBUGGING
     console.log("Email sending DISABLED for debugging - focusing on database");
-    
+
     // try {
     //   console.log("Creating email transporter...");
     //   console.log("Email config:", {
@@ -370,11 +370,39 @@ app.use((error, req, res, next) => {
   });
 });
 
+// Create leads table if it doesn't exist
+async function createLeadsTable() {
+  try {
+    console.log("Creating leads table if it doesn't exist...");
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS leads (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        phone VARCHAR(20) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        ip_address INET
+      )
+    `);
+    console.log("Leads table created/verified successfully!");
+  } catch (error) {
+    console.error("Error creating leads table:", error);
+    throw error;
+  }
+}
+
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 Frontend: http://localhost:${PORT}`);
   console.log(`🔗 API: http://localhost:${PORT}/api`);
+  
+  // Create table on startup
+  try {
+    await createLeadsTable();
+  } catch (error) {
+    console.error("Failed to create leads table:", error);
+  }
 });
 
 // Graceful shutdown
