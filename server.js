@@ -136,14 +136,14 @@ app.get("/sitemap.xml", (req, res) => {
   res.sendFile(path.join(__dirname, "sitemap.xml"));
 });
 
-// Email configuration - DISABLED for faster form submission
-// const transporter = nodemailer.createTransport({
-//   service: "gmail",
-//   auth: {
-//     user: process.env.EMAIL_USER, // Must be a Gmail address
-//     pass: process.env.EMAIL_PASS, // Gmail App Password
-//   },
-// });
+// Email configuration
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 // Validation middleware
 const validateLead = [
@@ -170,25 +170,21 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+// Database connection info (temporary)
+app.get("/api/db-info", (req, res) => {
+  res.json({
+    database_url: process.env.DATABASE_URL ? "Set" : "Not set",
+    connection_string: process.env.DATABASE_URL ? process.env.DATABASE_URL.replace(/:[^:]*@/, ':***@') : "Not set"
+  });
+});
+
 // Lead submission endpoint
 app.post("/api/leads", validateLead, async (req, res) => {
-  console.log("Lead submission request received:", {
-    body: req.body,
-    ip: req.ip,
-    userAgent: req.get("User-Agent"),
-  });
-
-  console.log("Environment check:", {
-    NODE_ENV: process.env.NODE_ENV,
-    DATABASE_URL: process.env.DATABASE_URL ? "Set" : "Not set",
-    PORT: process.env.PORT,
-  });
 
   try {
     // Check validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      console.log("Validation errors:", errors.array());
       return res.status(400).json({
         success: false,
         message: "Dados inválidos",
@@ -196,14 +192,7 @@ app.post("/api/leads", validateLead, async (req, res) => {
       });
     }
 
-    // Test database connection
-    console.log("Testing database connection...");
-    const testConnection = await pool.query("SELECT 1");
-    console.log("Database connection test successful:", testConnection.rows[0]);
-
     const { name, email, phone } = req.body;
-    console.log("Processing lead:", { name, email, phone });
-    console.log("About to send emails...");
 
     // Check if lead already exists
     const existingLead = await pool.query(
@@ -226,46 +215,78 @@ app.post("/api/leads", validateLead, async (req, res) => {
 
     const leadId = result.rows[0].id;
 
-    // Email sending DISABLED for faster form submission
-    console.log("Email sending DISABLED - focusing on fast database storage");
-    console.log("Lead saved successfully with ID:", leadId);
-
-    // Send notification to admin - DISABLED FOR TESTING
-    console.log("Admin email sending DISABLED for testing");
+    // Send welcome email - DISABLED for performance
     // try {
     //   await transporter.sendMail({
-    //     from: process.env.EMAIL_USER,
-    //     to: process.env.ADMIN_EMAIL,
-    //     subject: `Nova lead cadastrada: ${name}`,
-    //     html: `
-    //                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-    //                     <div style="background: linear-gradient(135deg, #c2767b, #5a1e2e); padding: 20px; text-align: center;">
-    //                         <img src="https://glowmuse.com.br/assets/logo.png" alt="GlowMuse" style="max-width: 150px; height: auto;">
-    //                     </div>
-    //                     <div style="padding: 30px; background: #faf3ef;">
-    //                         <h3 style="color: #5a1e2e; margin-bottom: 20px;">Nova lead cadastrada na GlowMuse</h3>
-    //                         <p><strong>Nome:</strong> ${name}</p>
-    //                         <p><strong>E-mail:</strong> ${email}</p>
-    //                         <p><strong>Telefone:</strong> ${phone}</p>
-    //                         <p><strong>Data:</strong> ${new Date().toLocaleString(
-    //                           "pt-BR"
-    //                         )}</p>
-    //                         <p><strong>IP:</strong> ${req.ip}</p>
-    //                     </div>
-    //                 </div>
-    //             `,
-    //   });
-    // } catch (adminEmailError) {
-    //   console.error("Admin email error:", adminEmailError);
-    // }
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Bem-vinda à lista de espera da GlowMuse! 🎉",
+        html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <div style="background: linear-gradient(135deg, #c2767b, #5a1e2e); padding: 40px; text-align: center; color: white;">
+                            <img src="https://glowmuse.com.br/assets/logo.png" alt="GlowMuse" style="max-width: 200px; height: auto; margin-bottom: 15px;">
+                            <p style="margin: 10px 0 0 0; opacity: 0.9;">O novo espaço para acompanhantes no Brasil</p>
+                        </div>
+                        <div style="padding: 40px; background: #faf3ef;">
+                            <h2 style="color: #5a1e2e; margin-bottom: 20px;">Olá ${name}!</h2>
+                            <p style="color:rgb(255, 252, 252); line-height: 1.6; margin-bottom: 20px;">
+                                Obrigada por se juntar à nossa lista de espera! Você está entre as primeiras pessoas a conhecer a GlowMuse.
+                            </p>
+                            <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
+                                Em breve você receberá:
+                            </p>
+                            <ul style="color: #4a4a4a; line-height: 1.8;">
+                                <li>Acesso antecipado à plataforma</li>
+                                <li>Condições especiais de lançamento</li>
+                                <li>Atualizações exclusivas sobre o desenvolvimento</li>
+                                <li>Suporte direto da nossa equipe</li>
+                            </ul>
+                            <p style="color: #4a4a4a; line-height: 1.6; margin-top: 30px;">
+                                Sua profissão merece respeito. Sua história merece espaço.
+                            </p>
+                            <p style="color: #c2767b; font-weight: 600; margin-top: 20px;">
+                                Equipe GlowMuse
+                            </p>
+                        </div>
+                    </div>
+                `,
+      });
+    } catch (emailError) {
+      console.error("Email sending error:", emailError);
+      // Don't fail the request if email fails
+    }
 
-    console.log("Sending success response...");
+    // Send notification to admin
+    try {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: process.env.ADMIN_EMAIL,
+        subject: `Nova lead cadastrada: ${name}`,
+        html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <div style="background: linear-gradient(135deg, #c2767b, #5a1e2e); padding: 20px; text-align: center;">
+                            <img src="https://glowmuse.com.br/assets/logo.png" alt="GlowMuse" style="max-width: 150px; height: auto;">
+                        </div>
+                        <div style="padding: 30px; background: #faf3ef;">
+                            <h3 style="color: #5a1e2e; margin-bottom: 20px;">Nova lead cadastrada na GlowMuse</h3>
+                            <p><strong>Nome:</strong> ${name}</p>
+                            <p><strong>E-mail:</strong> ${email}</p>
+                            <p><strong>Telefone:</strong> ${phone}</p>
+                            <p><strong>Data:</strong> ${new Date().toLocaleString("pt-BR")}</p>
+                            <p><strong>IP:</strong> ${req.ip}</p>
+                        </div>
+                    </div>
+                `,
+      });
+    } catch (adminEmailError) {
+      console.error("Admin email error:", adminEmailError);
+    }
+
     res.json({
       success: true,
       message: "Lead cadastrada com sucesso!",
       leadId: leadId,
     });
-    console.log("Response sent successfully");
   } catch (error) {
     console.error("Lead submission error:", {
       error: error.message,
@@ -342,39 +363,11 @@ app.use((error, req, res, next) => {
   });
 });
 
-// Create leads table if it doesn't exist
-async function createLeadsTable() {
-  try {
-    console.log("Creating leads table if it doesn't exist...");
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS leads (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        phone VARCHAR(20) NOT NULL,
-        created_at TIMESTAMP DEFAULT NOW(),
-        ip_address INET
-      )
-    `);
-    console.log("Leads table created/verified successfully!");
-  } catch (error) {
-    console.error("Error creating leads table:", error);
-    throw error;
-  }
-}
-
 // Start server
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 Frontend: http://localhost:${PORT}`);
   console.log(`🔗 API: http://localhost:${PORT}/api`);
-
-  // Create table on startup
-  try {
-    await createLeadsTable();
-  } catch (error) {
-    console.error("Failed to create leads table:", error);
-  }
 });
 
 // Graceful shutdown

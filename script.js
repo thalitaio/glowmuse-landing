@@ -31,10 +31,7 @@ document.addEventListener("keydown", function (event) {
 });
 
 // Smooth scrolling and form handling
-console.log("Script.js loaded!");
-
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM loaded, setting up forms...");
   // Mobile menu toggle
   const navToggle = document.querySelector(".nav-toggle");
   const navMenu = document.querySelector(".nav-menu");
@@ -102,7 +99,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
-      console.log("Form submit triggered!");
 
       const formData = new FormData(form);
       const data = {
@@ -110,8 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
         email: formData.get("email"),
         phone: formData.get("phone"),
       };
-      
-      console.log("Form data:", data);
 
       // Format phone number for server
       if (data.phone) {
@@ -132,13 +126,10 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Validate form data
-      console.log("Validating form data...");
       if (!data.name || !data.email || !data.phone) {
-        console.log("Validation failed: missing fields");
         alert("Por favor, preencha todos os campos.");
         return;
       }
-      console.log("Form validation passed");
 
       // Name validation (only letters and spaces)
       const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
@@ -171,7 +162,6 @@ document.addEventListener("DOMContentLoaded", function () {
         submitButton.disabled = true;
 
         // Send data to backend
-        console.log("Sending data to server:", data);
         const response = await fetch("/api/leads", {
           method: "POST",
           headers: {
@@ -179,7 +169,6 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           body: JSON.stringify(data),
         });
-        console.log("Response received:", response.status);
 
         if (response.ok) {
           // Success
@@ -209,7 +198,6 @@ document.addEventListener("DOMContentLoaded", function () {
           throw new Error(errorData.message || "Erro ao enviar dados");
         }
       } catch (error) {
-        console.error("Error:", error);
 
         // Reset button (moved inside try-catch to ensure variables are in scope)
         const submitButton = form.querySelector(".form-submit");
@@ -286,7 +274,6 @@ document.addEventListener("DOMContentLoaded", function () {
 // Scroll to form function
 function scrollToForm() {
   try {
-    console.log("scrollToForm called"); // Debug
 
     // Try multiple selectors to find the form section
     let formSection = document.getElementById("contato");
@@ -299,7 +286,6 @@ function scrollToForm() {
       formSection = document.querySelector('section[class*="cta"]');
     }
 
-    console.log("formSection found:", formSection); // Debug
 
     if (!formSection) {
       console.error(
@@ -315,16 +301,12 @@ function scrollToForm() {
     const headerHeight = header ? header.offsetHeight : 120;
     const targetPosition = formSection.offsetTop - headerHeight - 20;
 
-    console.log("Header height:", headerHeight);
-    console.log("Form section top:", formSection.offsetTop);
-    console.log("Scrolling to position:", targetPosition);
 
     window.scrollTo({
       top: Math.max(0, targetPosition),
       behavior: "smooth",
     });
 
-    console.log("Scroll initiated successfully");
   } catch (error) {
     console.error("Error in scrollToForm:", error);
 
