@@ -56,7 +56,7 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:", "https:"],
-        scriptSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
         connectSrc: ["'self'"],
       },
     },
@@ -204,6 +204,7 @@ app.post("/api/leads", validateLead, async (req, res) => {
 
     const { name, email, phone } = req.body;
     console.log("Processing lead:", { name, email, phone });
+    console.log("About to send emails...");
 
     // Check if lead already exists - TEMPORARILY DISABLED FOR DEBUGGING
     // const existingLead = await pool.query(
@@ -228,6 +229,7 @@ app.post("/api/leads", validateLead, async (req, res) => {
     const leadId = "test-" + Date.now();
 
     // Send welcome email
+    console.log("Attempting to send welcome email to:", email);
     try {
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
@@ -263,6 +265,7 @@ app.post("/api/leads", validateLead, async (req, res) => {
                     </div>
                 `,
       });
+      console.log("Welcome email sent successfully to:", email);
     } catch (emailError) {
       console.error("Email sending error:", emailError);
       // Don't fail the request if email fails
@@ -284,7 +287,9 @@ app.post("/api/leads", validateLead, async (req, res) => {
                             <p><strong>Nome:</strong> ${name}</p>
                             <p><strong>E-mail:</strong> ${email}</p>
                             <p><strong>Telefone:</strong> ${phone}</p>
-                            <p><strong>Data:</strong> ${new Date().toLocaleString("pt-BR")}</p>
+                            <p><strong>Data:</strong> ${new Date().toLocaleString(
+                              "pt-BR"
+                            )}</p>
                             <p><strong>IP:</strong> ${req.ip}</p>
                         </div>
                     </div>
@@ -294,11 +299,13 @@ app.post("/api/leads", validateLead, async (req, res) => {
       console.error("Admin email error:", adminEmailError);
     }
 
+    console.log("Sending success response...");
     res.json({
       success: true,
       message: "Lead cadastrada com sucesso!",
       leadId: leadId,
     });
+    console.log("Response sent successfully");
   } catch (error) {
     console.error("Lead submission error:", {
       error: error.message,
