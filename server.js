@@ -215,72 +215,8 @@ app.post("/api/leads", validateLead, async (req, res) => {
 
     const leadId = result.rows[0].id;
 
-    // Send welcome email - DISABLED for performance
-    // try {
-    //   await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Bem-vinda à lista de espera da GlowMuse! 🎉",
-        html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                        <div style="background: linear-gradient(135deg, #c2767b, #5a1e2e); padding: 40px; text-align: center; color: white;">
-                            <img src="https://glowmuse.com.br/assets/logo.png" alt="GlowMuse" style="max-width: 200px; height: auto; margin-bottom: 15px;">
-                            <p style="margin: 10px 0 0 0; opacity: 0.9;">O novo espaço para acompanhantes no Brasil</p>
-                        </div>
-                        <div style="padding: 40px; background: #faf3ef;">
-                            <h2 style="color: #5a1e2e; margin-bottom: 20px;">Olá ${name}!</h2>
-                            <p style="color:rgb(255, 252, 252); line-height: 1.6; margin-bottom: 20px;">
-                                Obrigada por se juntar à nossa lista de espera! Você está entre as primeiras pessoas a conhecer a GlowMuse.
-                            </p>
-                            <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
-                                Em breve você receberá:
-                            </p>
-                            <ul style="color: #4a4a4a; line-height: 1.8;">
-                                <li>Acesso antecipado à plataforma</li>
-                                <li>Condições especiais de lançamento</li>
-                                <li>Atualizações exclusivas sobre o desenvolvimento</li>
-                                <li>Suporte direto da nossa equipe</li>
-                            </ul>
-                            <p style="color: #4a4a4a; line-height: 1.6; margin-top: 30px;">
-                                Sua profissão merece respeito. Sua história merece espaço.
-                            </p>
-                            <p style="color: #c2767b; font-weight: 600; margin-top: 20px;">
-                                Equipe GlowMuse
-                            </p>
-                        </div>
-                    </div>
-                `,
-      });
-    } catch (emailError) {
-      console.error("Email sending error:", emailError);
-      // Don't fail the request if email fails
-    }
-
-    // Send notification to admin
-    try {
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: process.env.ADMIN_EMAIL,
-        subject: `Nova lead cadastrada: ${name}`,
-        html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                        <div style="background: linear-gradient(135deg, #c2767b, #5a1e2e); padding: 20px; text-align: center;">
-                            <img src="https://glowmuse.com.br/assets/logo.png" alt="GlowMuse" style="max-width: 150px; height: auto;">
-                        </div>
-                        <div style="padding: 30px; background: #faf3ef;">
-                            <h3 style="color: #5a1e2e; margin-bottom: 20px;">Nova lead cadastrada na GlowMuse</h3>
-                            <p><strong>Nome:</strong> ${name}</p>
-                            <p><strong>E-mail:</strong> ${email}</p>
-                            <p><strong>Telefone:</strong> ${phone}</p>
-                            <p><strong>Data:</strong> ${new Date().toLocaleString("pt-BR")}</p>
-                            <p><strong>IP:</strong> ${req.ip}</p>
-                        </div>
-                    </div>
-                `,
-      });
-    } catch (adminEmailError) {
-      console.error("Admin email error:", adminEmailError);
-    }
+    // Email sending DISABLED for performance
+    // All email code commented out to avoid syntax errors
 
     res.json({
       success: true,
