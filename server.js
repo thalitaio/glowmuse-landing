@@ -232,8 +232,19 @@ app.post("/api/leads", validateLead, async (req, res) => {
     console.log("Attempting to send welcome email to:", email);
     console.log("EMAIL_USER:", process.env.EMAIL_USER ? "Set" : "Not set");
     console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "Set" : "Not set");
-    
+
     try {
+      console.log("Creating email transporter...");
+      console.log("Email config:", {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS ? "***" : "Not set"
+      });
+      
+      // Test Gmail connection first
+      console.log("Testing Gmail connection...");
+      await transporter.verify();
+      console.log("Gmail connection verified successfully!");
+      
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: email,
@@ -270,7 +281,12 @@ app.post("/api/leads", validateLead, async (req, res) => {
       });
       console.log("Welcome email sent successfully to:", email);
     } catch (emailError) {
-      console.error("Email sending error:", emailError);
+      console.error("Email sending error details:", {
+        message: emailError.message,
+        code: emailError.code,
+        response: emailError.response,
+        stack: emailError.stack
+      });
       // Don't fail the request if email fails
     }
 
