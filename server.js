@@ -136,18 +136,13 @@ app.get("/sitemap.xml", (req, res) => {
   res.sendFile(path.join(__dirname, "sitemap.xml"));
 });
 
-// Email configuration
+// Email configuration - Using Gmail SMTP
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true for 465, false for other ports
+  service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.EMAIL_USER, // Must be a Gmail address
+    pass: process.env.EMAIL_PASS, // Gmail App Password
   },
-  tls: {
-    rejectUnauthorized: false
-  }
 });
 
 // Validation middleware
@@ -237,6 +232,14 @@ app.post("/api/leads", validateLead, async (req, res) => {
     console.log("Attempting to send welcome email to:", email);
     console.log("EMAIL_USER:", process.env.EMAIL_USER ? "Set" : "Not set");
     console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "Set" : "Not set");
+    
+    // Check if EMAIL_USER is a Gmail address
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_USER.includes('@gmail.com')) {
+      console.error("ERROR: EMAIL_USER must be a Gmail address for Gmail SMTP to work");
+      console.error("Current EMAIL_USER:", process.env.EMAIL_USER);
+      console.error("Please set EMAIL_USER to a Gmail address (e.g., yourname@gmail.com)");
+      throw new Error("EMAIL_USER must be a Gmail address");
+    }
 
     try {
       console.log("Creating email transporter...");
@@ -247,12 +250,7 @@ app.post("/api/leads", validateLead, async (req, res) => {
 
       // Test Gmail connection first
       console.log("Testing Gmail connection...");
-      await Promise.race([
-        transporter.verify(),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Connection timeout')), 10000)
-        )
-      ]);
+      await transporter.verify();
       console.log("Gmail connection verified successfully!");
 
       await transporter.sendMail({
