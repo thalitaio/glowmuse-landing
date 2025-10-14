@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
+      console.log("Form submit triggered!");
 
       const formData = new FormData(form);
       const data = {
@@ -109,6 +110,8 @@ document.addEventListener("DOMContentLoaded", function () {
         email: formData.get("email"),
         phone: formData.get("phone"),
       };
+      
+      console.log("Form data:", data);
 
       // Format phone number for server
       if (data.phone) {
@@ -129,10 +132,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Validate form data
+      console.log("Validating form data...");
       if (!data.name || !data.email || !data.phone) {
+        console.log("Validation failed: missing fields");
         alert("Por favor, preencha todos os campos.");
         return;
       }
+      console.log("Form validation passed");
 
       // Name validation (only letters and spaces)
       const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
@@ -165,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
         submitButton.disabled = true;
 
         // Send data to backend
+        console.log("Sending data to server:", data);
         const response = await fetch("/api/leads", {
           method: "POST",
           headers: {
@@ -172,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
           },
           body: JSON.stringify(data),
         });
+        console.log("Response received:", response.status);
 
         if (response.ok) {
           // Success
