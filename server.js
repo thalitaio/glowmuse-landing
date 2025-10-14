@@ -196,107 +196,67 @@ app.post("/api/leads", validateLead, async (req, res) => {
       });
     }
 
-    // Test database connection - TEMPORARILY DISABLED FOR DEBUGGING
+    // Test database connection
     console.log("Testing database connection...");
-    // const testConnection = await pool.query("SELECT 1");
-    // console.log("Database connection test successful:", testConnection.rows[0]);
-    console.log("Database connection test SKIPPED for debugging");
+    const testConnection = await pool.query("SELECT 1");
+    console.log("Database connection test successful:", testConnection.rows[0]);
 
     const { name, email, phone } = req.body;
     console.log("Processing lead:", { name, email, phone });
     console.log("About to send emails...");
 
-    // Check if lead already exists - TEMPORARILY DISABLED FOR DEBUGGING
-    // const existingLead = await pool.query(
-    //   "SELECT id FROM leads WHERE email = $1",
-    //   [email]
-    // );
+    // Check if lead already exists
+    const existingLead = await pool.query(
+      "SELECT id FROM leads WHERE email = $1",
+      [email]
+    );
 
-    // if (existingLead.rows.length > 0) {
-    //   return res.status(409).json({
-    //     success: false,
-    //     message: "Este e-mail já está cadastrado em nossa lista de espera.",
-    //   });
-    // }
+    if (existingLead.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "Este e-mail já está cadastrado em nossa lista de espera.",
+      });
+    }
 
-    // Insert lead into database - TEMPORARILY DISABLED FOR DEBUGGING
-    // const result = await pool.query(
-    //   "INSERT INTO leads (name, email, phone, created_at, ip_address) VALUES ($1, $2, $3, NOW(), $4) RETURNING id",
-    //   [name, email, phone, req.ip]
-    // );
+    // Insert lead into database
+    const result = await pool.query(
+      "INSERT INTO leads (name, email, phone, created_at, ip_address) VALUES ($1, $2, $3, NOW(), $4) RETURNING id",
+      [name, email, phone, req.ip]
+    );
 
-    // const leadId = result.rows[0].id;
-    const leadId = "test-" + Date.now();
+    const leadId = result.rows[0].id;
 
-    // Send welcome email
-    console.log("Attempting to send welcome email to:", email);
-    console.log("EMAIL_USER:", process.env.EMAIL_USER ? "Set" : "Not set");
-    console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "Set" : "Not set");
+    // Send welcome email - TEMPORARILY DISABLED FOR DEBUGGING
+    console.log("Email sending DISABLED for debugging - focusing on database");
     
-    // Check if EMAIL_USER is a Gmail address
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_USER.includes('@gmail.com')) {
-      console.error("ERROR: EMAIL_USER must be a Gmail address for Gmail SMTP to work");
-      console.error("Current EMAIL_USER:", process.env.EMAIL_USER);
-      console.error("Please set EMAIL_USER to a Gmail address (e.g., yourname@gmail.com)");
-      throw new Error("EMAIL_USER must be a Gmail address");
-    }
+    // try {
+    //   console.log("Creating email transporter...");
+    //   console.log("Email config:", {
+    //     user: process.env.EMAIL_USER,
+    //     pass: process.env.EMAIL_PASS ? "***" : "Not set",
+    //   });
 
-    try {
-      console.log("Creating email transporter...");
-      console.log("Email config:", {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS ? "***" : "Not set",
-      });
+    //   // Test Gmail connection first
+    //   console.log("Testing Gmail connection...");
+    //   await transporter.verify();
+    //   console.log("Gmail connection verified successfully!");
 
-      // Test Gmail connection first
-      console.log("Testing Gmail connection...");
-      await transporter.verify();
-      console.log("Gmail connection verified successfully!");
-
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Bem-vinda à lista de espera da GlowMuse! 🎉",
-        html: `
-                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                        <div style="background: linear-gradient(135deg, #c2767b, #5a1e2e); padding: 40px; text-align: center; color: white;">
-                            <img src="https://glowmuse.com.br/assets/logo.png" alt="GlowMuse" style="max-width: 200px; height: auto; margin-bottom: 15px;">
-                            <p style="margin: 10px 0 0 0; opacity: 0.9;">O novo espaço para acompanhantes no Brasil</p>
-                        </div>
-                        <div style="padding: 40px; background: #faf3ef;">
-                            <h2 style="color: #5a1e2e; margin-bottom: 20px;">Olá ${name}!</h2>
-                            <p style="color:rgb(255, 252, 252); line-height: 1.6; margin-bottom: 20px;">
-                                Obrigada por se juntar à nossa lista de espera! Você está entre as primeiras pessoas a conhecer a GlowMuse.
-                            </p>
-                            <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
-                                Em breve você receberá:
-                            </p>
-                            <ul style="color: #4a4a4a; line-height: 1.8;">
-                                <li>Acesso antecipado à plataforma</li>
-                                <li>Condições especiais de lançamento</li>
-                                <li>Atualizações exclusivas sobre o desenvolvimento</li>
-                                <li>Suporte direto da nossa equipe</li>
-                            </ul>
-                            <p style="color: #4a4a4a; line-height: 1.6; margin-top: 30px;">
-                                Sua profissão merece respeito. Sua história merece espaço.
-                            </p>
-                            <p style="color: #c2767b; font-weight: 600; margin-top: 20px;">
-                                Equipe GlowMuse
-                            </p>
-                        </div>
-                    </div>
-                `,
-      });
-      console.log("Welcome email sent successfully to:", email);
-    } catch (emailError) {
-      console.error("Email sending error details:", {
-        message: emailError.message,
-        code: emailError.code,
-        response: emailError.response,
-        stack: emailError.stack,
-      });
-      // Don't fail the request if email fails
-    }
+    //   await transporter.sendMail({
+    //     from: process.env.EMAIL_USER,
+    //     to: email,
+    //     subject: "Bem-vinda à lista de espera da GlowMuse! 🎉",
+    //     html: `Welcome email content...`
+    //   });
+    //   console.log("Welcome email sent successfully to:", email);
+    // } catch (emailError) {
+    //   console.error("Email sending error details:", {
+    //     message: emailError.message,
+    //     code: emailError.code,
+    //     response: emailError.response,
+    //     stack: emailError.stack,
+    //   });
+    //   // Don't fail the request if email fails
+    // }
 
     // Send notification to admin - DISABLED FOR TESTING
     console.log("Admin email sending DISABLED for testing");
