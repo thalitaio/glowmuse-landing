@@ -138,11 +138,16 @@ app.get("/sitemap.xml", (req, res) => {
 
 // Email configuration
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 // Validation middleware
@@ -237,14 +242,19 @@ app.post("/api/leads", validateLead, async (req, res) => {
       console.log("Creating email transporter...");
       console.log("Email config:", {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS ? "***" : "Not set"
+        pass: process.env.EMAIL_PASS ? "***" : "Not set",
       });
-      
+
       // Test Gmail connection first
       console.log("Testing Gmail connection...");
-      await transporter.verify();
+      await Promise.race([
+        transporter.verify(),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Connection timeout')), 10000)
+        )
+      ]);
       console.log("Gmail connection verified successfully!");
-      
+
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: email,
@@ -285,7 +295,7 @@ app.post("/api/leads", validateLead, async (req, res) => {
         message: emailError.message,
         code: emailError.code,
         response: emailError.response,
-        stack: emailError.stack
+        stack: emailError.stack,
       });
       // Don't fail the request if email fails
     }
