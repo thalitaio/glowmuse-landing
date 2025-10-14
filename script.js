@@ -1,3 +1,35 @@
+// Modal functions
+function showEmailExistsModal() {
+  const modal = document.getElementById("emailExistsModal");
+  if (modal) {
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden"; // Prevent background scrolling
+  }
+}
+
+function closeEmailExistsModal() {
+  const modal = document.getElementById("emailExistsModal");
+  if (modal) {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto"; // Restore scrolling
+  }
+}
+
+// Close modal when clicking outside
+document.addEventListener("click", function (event) {
+  const modal = document.getElementById("emailExistsModal");
+  if (event.target === modal) {
+    closeEmailExistsModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Escape") {
+    closeEmailExistsModal();
+  }
+});
+
 // Smooth scrolling and form handling
 console.log("Script.js loaded!");
 
@@ -160,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Handle different error responses
           const errorData = await response.json();
           if (response.status === 409) {
-            alert("Este e-mail já está cadastrado em nossa lista de espera.");
+            showEmailExistsModal();
           } else {
             alert(
               errorData.message || "Erro ao enviar dados. Tente novamente."
