@@ -57,6 +57,7 @@ app.use(
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:", "https:"],
         scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrcAttr: ["'unsafe-inline'"],
         connectSrc: ["'self'"],
       },
     },
@@ -174,13 +175,14 @@ app.get("/api/health", (req, res) => {
 app.get("/api/db-info", (req, res) => {
   res.json({
     database_url: process.env.DATABASE_URL ? "Set" : "Not set",
-    connection_string: process.env.DATABASE_URL ? process.env.DATABASE_URL.replace(/:[^:]*@/, ':***@') : "Not set"
+    connection_string: process.env.DATABASE_URL
+      ? process.env.DATABASE_URL.replace(/:[^:]*@/, ":***@")
+      : "Not set",
   });
 });
 
 // Lead submission endpoint
 app.post("/api/leads", validateLead, async (req, res) => {
-
   try {
     // Check validation errors
     const errors = validationResult(req);

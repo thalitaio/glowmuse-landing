@@ -15,6 +15,7 @@ function closeEmailExistsModal() {
   }
 }
 
+
 // Close modal when clicking outside
 document.addEventListener("click", function (event) {
   const modal = document.getElementById("emailExistsModal");
@@ -27,6 +28,16 @@ document.addEventListener("click", function (event) {
 document.addEventListener("keydown", function (event) {
   if (event.key === "Escape") {
     closeEmailExistsModal();
+  }
+});
+
+// Add event listener to modal button
+document.addEventListener("DOMContentLoaded", function () {
+  const modalButton = document.querySelector(".modal-button");
+  if (modalButton) {
+    modalButton.addEventListener("click", function () {
+      closeEmailExistsModal();
+    });
   }
 });
 
@@ -198,7 +209,6 @@ document.addEventListener("DOMContentLoaded", function () {
           throw new Error(errorData.message || "Erro ao enviar dados");
         }
       } catch (error) {
-
         // Reset button (moved inside try-catch to ensure variables are in scope)
         const submitButton = form.querySelector(".form-submit");
         if (submitButton) {
@@ -274,7 +284,6 @@ document.addEventListener("DOMContentLoaded", function () {
 // Scroll to form function
 function scrollToForm() {
   try {
-
     // Try multiple selectors to find the form section
     let formSection = document.getElementById("contato");
 
@@ -285,7 +294,6 @@ function scrollToForm() {
     if (!formSection) {
       formSection = document.querySelector('section[class*="cta"]');
     }
-
 
     if (!formSection) {
       console.error(
@@ -301,12 +309,10 @@ function scrollToForm() {
     const headerHeight = header ? header.offsetHeight : 120;
     const targetPosition = formSection.offsetTop - headerHeight - 20;
 
-
     window.scrollTo({
       top: Math.max(0, targetPosition),
       behavior: "smooth",
     });
-
   } catch (error) {
     console.error("Error in scrollToForm:", error);
 
