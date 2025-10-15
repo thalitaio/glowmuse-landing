@@ -15,7 +15,6 @@ function closeEmailExistsModal() {
   }
 }
 
-
 // Close modal when clicking outside
 document.addEventListener("click", function (event) {
   const modal = document.getElementById("emailExistsModal");
@@ -240,13 +239,45 @@ document.addEventListener("DOMContentLoaded", function () {
   function formatPhoneInput(input) {
     input.addEventListener("input", function (e) {
       let value = e.target.value.replace(/\D/g, "");
-      if (value.length >= 2) {
-        value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+
+      // Format based on length
+      if (value.length === 0) {
+        e.target.value = "";
+      } else if (value.length <= 2) {
+        e.target.value = `(${value}`;
+      } else if (value.length <= 6) {
+        e.target.value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+      } else if (value.length <= 10) {
+        e.target.value = `(${value.substring(0, 2)}) ${value.substring(
+          2,
+          6
+        )}-${value.substring(6)}`;
+      } else {
+        e.target.value = `(${value.substring(0, 2)}) ${value.substring(
+          2,
+          7
+        )}-${value.substring(7, 11)}`;
       }
-      if (value.length >= 10) {
-        value = value.substring(0, 10) + "-" + value.substring(10, 14);
+    });
+
+    // Allow normal editing (backspace, delete, etc.)
+    input.addEventListener("keydown", function (e) {
+      // Allow backspace, delete, arrow keys, tab, etc.
+      if (
+        [8, 9, 27, 46, 37, 38, 39, 40].indexOf(e.keyCode) !== -1 ||
+        (e.keyCode === 65 && e.ctrlKey === true) || // Ctrl+A
+        (e.keyCode >= 35 && e.keyCode <= 40)
+      ) {
+        // End, Home, Arrow keys
+        return;
       }
-      e.target.value = value;
+      // Allow only numbers
+      if (
+        (e.shiftKey || e.keyCode < 48 || e.keyCode > 57) &&
+        (e.keyCode < 96 || e.keyCode > 105)
+      ) {
+        e.preventDefault();
+      }
     });
   }
 
