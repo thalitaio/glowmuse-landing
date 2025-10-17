@@ -279,6 +279,88 @@ app.get("/api/leads/count", async (req, res) => {
   }
 });
 
+// Zapier integration endpoint
+app.get("/api/zapier/leads", async (req, res) => {
+  try {
+    const { limit = 100, offset = 0, status = "all" } = req.query;
+
+    let query = `
+      SELECT 
+        id,
+        name,
+        email,
+        phone,
+        created_at,
+        ip_address,
+        CASE 
+          WHEN created_at >= NOW() - INTERVAL '1 day' THEN 'new'
+          WHEN created_at >= NOW() - INTERVAL '7 days' THEN 'recent'
+          ELSE 'old'
+        END as lead_status
+      FROM leads 
+    `;
+
+    const params = [];
+    let paramCount = 0;
+
+    if (status !== "all") {
+      paramCount++;
+      query += ` WHERE created_at >= NOW() - INTERVAL '${
+        status === "new" ? "1 day" : "7 days"
+      }'`;
+    }
+
+    query += ` ORDER BY created_at DESC LIMIT $${paramCount + 1} OFFSET $${
+      paramCount + 2
+    }`;
+    params.push(parseInt(limit), parseInt(offset));
+
+    const result = await pool.query(query, params);
+
+    res.json({
+      success: true,
+      data: result.rows,
+      pagination: {
+        limit: parseInt(limit),
+        offset: parseInt(offset),
+        total: result.rows.length,
+      },
+    });
+  } catch (error) {
+    console.error("Error getting leads for Zapier:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro ao obter leads para Zapier",
+      error: error.message,
+    });
+  }
+});
+
+// Zapier webhook endpoint for new leads
+app.post("/api/zapier/webhook", async (req, res) => {
+  try {
+    const { event, data } = req.body;
+
+    // Log the webhook event
+    console.log(`Zapier webhook received: ${event}`, data);
+
+    // You can add custom logic here based on the event type
+    // For example, update lead status, send notifications, etc.
+
+    res.json({
+      success: true,
+      message: "Webhook processed successfully",
+      event: event,
+    });
+  } catch (error) {
+    console.error("Error processing Zapier webhook:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro ao processar webhook do Zapier",
+    });
+  }
+});
+
 // Serve the main page
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
