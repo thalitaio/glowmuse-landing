@@ -2,19 +2,23 @@
 
 ## 📋 **Endpoints Disponíveis**
 
-### **1. Buscar Leads**
+### **1. Buscar Leads (SEGURO)**
 ```
-GET https://glowmuse.com.br/api/zapier/leads
+GET https://www.glowmuse.com.br/api/zapier/leads
 ```
 
+**🔐 Autenticação Obrigatória:**
+- **Header**: `X-API-Key: SUA_CHAVE_API`
+- **Query**: `?api_key=SUA_CHAVE_API`
+
 **Parâmetros:**
-- `limit` (opcional): Número de leads por página (padrão: 100)
+- `limit` (opcional): Número de leads por página (padrão: 50, máximo: 100)
 - `offset` (opcional): Página atual (padrão: 0)
 - `status` (opcional): Filtrar por status (`new`, `recent`, `all`)
 
 **Exemplo:**
 ```
-https://glowmuse.com.br/api/zapier/leads?limit=50&status=new
+https://www.glowmuse.com.br/api/zapier/leads?api_key=SUA_CHAVE&limit=50&status=new
 ```
 
 **Resposta:**
@@ -55,6 +59,25 @@ POST https://glowmuse.com.br/api/zapier/webhook
     "email": "joao@email.com"
   }
 }
+```
+
+## 🔐 **Configuração da API Key**
+
+### **1. Gerar API Key**
+Adicione esta variável de ambiente no Render:
+```
+ZAPIER_API_KEY=sua_chave_super_secreta_aqui
+```
+
+**Exemplo de chave segura:**
+```
+ZAPIER_API_KEY=zap_glowmuse_2024_abc123def456ghi789
+```
+
+### **2. Testar API Key**
+```bash
+curl -H "X-API-Key: sua_chave_aqui" \
+  "https://www.glowmuse.com.br/api/zapier/leads?limit=1"
 ```
 
 ## 🚀 **Configuração no Zapier**

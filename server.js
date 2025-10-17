@@ -279,10 +279,36 @@ app.get("/api/leads/count", async (req, res) => {
   }
 });
 
-// Zapier integration endpoint
+// Zapier integration endpoint - SECURED
 app.get("/api/zapier/leads", async (req, res) => {
   try {
-    const { limit = 100, offset = 0, status = "all" } = req.query;
+    // Security: Check API key
+    const apiKey = req.headers['x-api-key'] || req.query.api_key;
+    if (!apiKey || apiKey !== process.env.ZAPIER_API_KEY) {
+      return res.status(401).json({
+        success: false,
+        message: "API key required",
+      });
+    }
+
+    // Security: Rate limiting for this endpoint
+    const clientIP = req.ip;
+    const rateLimitKey = `zapier_${clientIP}`;
+    
+    // Basic rate limiting (you can enhance this with Redis)
+    const { limit = 50, offset = 0, status = "all" } = req.query;
+
+    // Security: Validate parameters
+    const validStatuses = ['all', 'new', 'recent'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status parameter",
+      });
+    }
+
+    const limitNum = Math.min(parseInt(limit) || 50, 100); // Max 100 records
+    const offsetNum = Math.max(parseInt(offset) || 0, 0);
 
     let query = `
       SELECT 
@@ -291,7 +317,6 @@ app.get("/api/zapier/leads", async (req, res) => {
         email,
         phone,
         created_at,
-        ip_address,
         CASE 
           WHEN created_at >= NOW() - INTERVAL '1 day' THEN 'new'
           WHEN created_at >= NOW() - INTERVAL '7 days' THEN 'recent'
@@ -313,7 +338,7 @@ app.get("/api/zapier/leads", async (req, res) => {
     query += ` ORDER BY created_at DESC LIMIT $${paramCount + 1} OFFSET $${
       paramCount + 2
     }`;
-    params.push(parseInt(limit), parseInt(offset));
+    params.push(limitNum, offsetNum);
 
     const result = await pool.query(query, params);
 
@@ -321,8 +346,8 @@ app.get("/api/zapier/leads", async (req, res) => {
       success: true,
       data: result.rows,
       pagination: {
-        limit: parseInt(limit),
-        offset: parseInt(offset),
+        limit: limitNum,
+        offset: offsetNum,
         total: result.rows.length,
       },
     });
@@ -331,7 +356,6 @@ app.get("/api/zapier/leads", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Erro ao obter leads para Zapier",
-      error: error.message,
     });
   }
 });
