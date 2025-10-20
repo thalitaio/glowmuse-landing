@@ -5,13 +5,9 @@
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
-        "dev": "node server-dev.js",
-        "dev-watch": "nodemon server-dev.js",
+        "dev": "nodemon server.js",
         "build": "echo 'Build completed'",
-        "test": "echo 'No tests specified'",
-        "deploy:railway": "./deploy-railway.sh",
-        "deploy:render": "./deploy-render.sh",
-        "deploy:docker": "./deploy-docker.sh"
+        "test": "echo 'No tests specified'"
     },
     "keywords": [
         "landing-page",
@@ -22,7 +18,7 @@
     "author": "GlowMuse",
     "license": "MIT",
     "dependencies": {
-        "bcryptjs": "^2.4.3",
+        "@supabase/supabase-js": "^2.75.1",
         "compression": "^1.7.4",
         "cors": "^2.8.5",
         "dotenv": "^16.6.1",
@@ -30,10 +26,7 @@
         "express-rate-limit": "^7.1.5",
         "express-validator": "^7.0.1",
         "helmet": "^7.1.0",
-        "jsonwebtoken": "^9.0.2",
-        "nodemailer": "^6.10.1",
-        "pg": "^8.11.3",
-        "sqlite3": "^5.1.7"
+        "nodemailer": "^6.10.1"
     },
     "devDependencies": {
         "nodemon": "^3.0.2"

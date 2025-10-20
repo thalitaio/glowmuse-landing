@@ -6,74 +6,50 @@ const compression = require("compression");
 const path = require("path");
 require("dotenv").config();
 
-const { Pool } = require("pg");
+const { createClient } = require("@supabase/supabase-js");
 const { body, validationResult } = require("express-validator");
 const nodemailer = require("nodemailer");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Database connection
-const pool = new Pool({
-  connectionString:
-    process.env.DATABASE_URL || "postgresql://localhost:5432/glowmuse_leads",
-  ssl:
-    process.env.NODE_ENV === "production"
-      ? { rejectUnauthorized: false }
-      : false,
-});
+// Supabase client configuration
+const supabaseUrl =
+  process.env.SUPABASE_URL || "https://owsplwuwjkklwnfajddj.supabase.co";
+const supabaseKey =
+  process.env.SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93c3Bsd3V3amtrbHduZmFqZGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4Nzg2MjgsImV4cCI6MjA3NjQ1NDYyOH0.saZai4dgFkZWbWBHCgMPtxrVkydBbUfQhQt1n4vj3Tk";
 
-// Test database connection
-pool
-  .connect()
-  .then((client) => {
-    console.log("✅ Database connected successfully");
-    client.release();
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Test if leads table exists
-    return pool.query("SELECT COUNT(*) FROM leads");
-  })
-  .then((result) => {
-    console.log(
-      "✅ Leads table accessible, current count:",
-      result.rows[0].count
-    );
-  })
-  .catch((err) => {
-    console.error("❌ Database connection error:", err);
-    console.error(
-      "Database URL:",
-      process.env.DATABASE_URL ? "Set" : "Not set"
-    );
-  });
+// Test Supabase connection
+async function testSupabaseConnection() {
+  try {
+    console.log("🔄 Testando conexão com Supabase...");
+
+    const { data, error } = await supabase
+      .from("leads")
+      .select("count", { count: "exact", head: true });
+
+    if (error) {
+      console.error("❌ Erro na conexão Supabase:", error.message);
+      return false;
+    }
+
+    console.log("✅ Supabase conectado com sucesso!");
+    console.log(`📊 Total de leads: ${data?.length || 0}`);
+    return true;
+  } catch (error) {
+    console.error("❌ Erro na conexão Supabase:", error.message);
+    return false;
+  }
+}
+
+// Test connection on startup
+testSupabaseConnection();
 
 // Security middleware
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "https:"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrcAttr: ["'unsafe-inline'"],
-        connectSrc: ["'self'"],
-      },
-    },
-  })
-);
-
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: {
-    error: "Muitas tentativas. Tente novamente em 15 minutos.",
-  },
-});
-
-app.use(limiter);
+app.use(helmet());
 
 // CORS configuration
 const allowedOrigins = [
@@ -99,12 +75,23 @@ app.use(
   })
 );
 
-// Body parsing middleware
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: {
+    error: "Muitas tentativas. Tente novamente em 15 minutos.",
+  },
+});
+
+app.use(limiter);
 
 // Compression middleware
 app.use(compression());
+
+// Body parsing middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Serve static files
 app.use(
@@ -137,15 +124,6 @@ app.get("/sitemap.xml", (req, res) => {
   res.sendFile(path.join(__dirname, "sitemap.xml"));
 });
 
-// Email configuration
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
 // Validation middleware
 const validateLead = [
   body("name")
@@ -168,17 +146,29 @@ app.get("/api/health", (req, res) => {
     status: "OK",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
+    database: "Supabase",
   });
 });
 
-// Database connection info (temporary)
-app.get("/api/db-info", (req, res) => {
-  res.json({
-    database_url: process.env.DATABASE_URL ? "Set" : "Not set",
-    connection_string: process.env.DATABASE_URL
-      ? process.env.DATABASE_URL.replace(/:[^:]*@/, ":***@")
-      : "Not set",
-  });
+// Database connection info
+app.get("/api/db-info", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("leads")
+      .select("count", { count: "exact", head: true });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      database: "Supabase",
+      status: "Connected",
+      totalLeads: data?.length || 0,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Lead submission endpoint
@@ -195,66 +185,67 @@ app.post("/api/leads", validateLead, async (req, res) => {
     }
 
     const { name, email, phone } = req.body;
+    const ipAddress =
+      req.ip ||
+      req.connection.remoteAddress ||
+      req.headers["x-forwarded-for"] ||
+      "unknown";
 
-    // Check if lead already exists
-    const existingLead = await pool.query(
-      "SELECT id FROM leads WHERE email = $1",
-      [email]
-    );
+    // Check if email already exists
+    const { data: existingLead, error: checkError } = await supabase
+      .from("leads")
+      .select("id")
+      .eq("email", email)
+      .single();
 
-    if (existingLead.rows.length > 0) {
+    if (checkError && checkError.code !== "PGRST116") {
+      console.error("Erro ao verificar email duplicado:", checkError);
+      return res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor",
+      });
+    }
+
+    if (existingLead) {
       return res.status(409).json({
         success: false,
         message: "Este e-mail já está cadastrado em nossa lista de espera.",
       });
     }
 
-    // Insert lead into database
-    const result = await pool.query(
-      "INSERT INTO leads (name, email, phone, created_at, ip_address) VALUES ($1, $2, $3, NOW(), $4) RETURNING id",
-      [name, email, phone, req.ip]
-    );
+    // Insert new lead
+    const { data: newLead, error: insertError } = await supabase
+      .from("leads")
+      .insert([
+        {
+          name: name.trim(),
+          email: email.toLowerCase().trim(),
+          phone: phone.trim(),
+          ip_address: ipAddress,
+          created_at: new Date().toISOString(),
+        },
+      ])
+      .select()
+      .single();
 
-    const leadId = result.rows[0].id;
+    if (insertError) {
+      console.error("Erro ao inserir lead:", insertError);
+      return res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor",
+      });
+    }
 
-    // Email sending DISABLED for performance
-    // All email code commented out to avoid syntax errors
+    console.log(`✅ Novo lead cadastrado: ${name} (${email})`);
 
     res.json({
       success: true,
       message: "Lead cadastrada com sucesso!",
-      leadId: leadId,
+      leadId: newLead.id,
+      database: "Supabase",
     });
   } catch (error) {
-    console.error("Lead submission error:", {
-      error: error.message,
-      stack: error.stack,
-      body: req.body,
-      timestamp: new Date().toISOString(),
-      errorCode: error.code,
-      errorName: error.name,
-    });
-
-    console.error("Full error object:", error);
-
-    // Check if it's a database connection error
-    if (error.code === "ECONNREFUSED" || error.code === "ENOTFOUND") {
-      return res.status(500).json({
-        success: false,
-        message:
-          "Erro de conexão com o banco de dados. Tente novamente em alguns minutos.",
-      });
-    }
-
-    // Check if it's a validation error
-    if (error.code === "23505") {
-      // Unique constraint violation
-      return res.status(409).json({
-        success: false,
-        message: "Este e-mail já está cadastrado em nossa lista de espera.",
-      });
-    }
-
+    console.error("Lead submission error:", error);
     res.status(500).json({
       success: false,
       message: "Erro interno do servidor. Tente novamente.",
@@ -265,10 +256,18 @@ app.post("/api/leads", validateLead, async (req, res) => {
 // Get leads count (admin only - in production, add authentication)
 app.get("/api/leads/count", async (req, res) => {
   try {
-    const result = await pool.query("SELECT COUNT(*) as count FROM leads");
+    const { data, error } = await supabase
+      .from("leads")
+      .select("count", { count: "exact", head: true });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
     res.json({
       success: true,
-      count: parseInt(result.rows[0].count),
+      count: data?.length || 0,
+      database: "Supabase",
     });
   } catch (error) {
     console.error("Error getting leads count:", error);
@@ -283,7 +282,7 @@ app.get("/api/leads/count", async (req, res) => {
 app.get("/api/zapier/leads", async (req, res) => {
   try {
     // Security: Check API key
-    const apiKey = req.headers['x-api-key'] || req.query.api_key;
+    const apiKey = req.headers["x-api-key"] || req.query.api_key;
     if (!apiKey || apiKey !== process.env.ZAPIER_API_KEY) {
       return res.status(401).json({
         success: false,
@@ -291,65 +290,20 @@ app.get("/api/zapier/leads", async (req, res) => {
       });
     }
 
-    // Security: Rate limiting for this endpoint
-    const clientIP = req.ip;
-    const rateLimitKey = `zapier_${clientIP}`;
-    
-    // Basic rate limiting (you can enhance this with Redis)
-    const { limit = 50, offset = 0, status = "all" } = req.query;
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(100);
 
-    // Security: Validate parameters
-    const validStatuses = ['all', 'new', 'recent'];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid status parameter",
-      });
+    if (error) {
+      return res.status(500).json({ error: error.message });
     }
-
-    const limitNum = Math.min(parseInt(limit) || 50, 100); // Max 100 records
-    const offsetNum = Math.max(parseInt(offset) || 0, 0);
-
-    let query = `
-      SELECT 
-        id,
-        name,
-        email,
-        phone,
-        created_at,
-        CASE 
-          WHEN created_at >= NOW() - INTERVAL '1 day' THEN 'new'
-          WHEN created_at >= NOW() - INTERVAL '7 days' THEN 'recent'
-          ELSE 'old'
-        END as lead_status
-      FROM leads 
-    `;
-
-    const params = [];
-    let paramCount = 0;
-
-    if (status !== "all") {
-      paramCount++;
-      query += ` WHERE created_at >= NOW() - INTERVAL '${
-        status === "new" ? "1 day" : "7 days"
-      }'`;
-    }
-
-    query += ` ORDER BY created_at DESC LIMIT $${paramCount + 1} OFFSET $${
-      paramCount + 2
-    }`;
-    params.push(limitNum, offsetNum);
-
-    const result = await pool.query(query, params);
 
     res.json({
       success: true,
-      data: result.rows,
-      pagination: {
-        limit: limitNum,
-        offset: offsetNum,
-        total: result.rows.length,
-      },
+      data: data || [],
+      database: "Supabase",
     });
   } catch (error) {
     console.error("Error getting leads for Zapier:", error);
@@ -367,9 +321,6 @@ app.post("/api/zapier/webhook", async (req, res) => {
 
     // Log the webhook event
     console.log(`Zapier webhook received: ${event}`, data);
-
-    // You can add custom logic here based on the event type
-    // For example, update lead status, send notifications, etc.
 
     res.json({
       success: true,
@@ -407,26 +358,23 @@ app.use((error, req, res, next) => {
   });
 });
 
+// Graceful shutdown
+process.on("SIGTERM", () => {
+  console.log("SIGTERM received, shutting down gracefully");
+  process.exit(0);
+});
+
+process.on("SIGINT", () => {
+  console.log("SIGINT received, shutting down gracefully");
+  process.exit(0);
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 Frontend: http://localhost:${PORT}`);
   console.log(`🔗 API: http://localhost:${PORT}/api`);
+  console.log(`💾 Database: Supabase`);
 });
 
-// Graceful shutdown
-process.on("SIGTERM", () => {
-  console.log("SIGTERM received, shutting down gracefully");
-  pool.end(() => {
-    console.log("Database connection closed");
-    process.exit(0);
-  });
-});
-
-process.on("SIGINT", () => {
-  console.log("SIGINT received, shutting down gracefully");
-  pool.end(() => {
-    console.log("Database connection closed");
-    process.exit(0);
-  });
-});
+module.exports = app;

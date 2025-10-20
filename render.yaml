@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: glowmuse-landing
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        value: https://owsplwuwjkklwnfajddj.supabase.co
+      - key: SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93c3Bsd3V3amtrbHduZmFqZGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4Nzg2MjgsImV4cCI6MjA3NjQ1NDYyOH0.saZai4dgFkZWbWBHCgMPtxrVkydBbUfQhQt1n4vj3Tk
+      - key: ZAPIER_API_KEY
+        value: sua_chave_zapier_super_secreta
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_USER
+        value: seu_email@gmail.com
+      - key: EMAIL_PASS
+        value: sua_senha_app_gmail
+      - key: ADMIN_EMAIL
+        value: admin@glowmuse.com.br
