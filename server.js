@@ -25,8 +25,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Test Supabase connection
 async function testSupabaseConnection() {
   try {
-    console.log("🔄 Testando conexão com Supabase...");
-
     const { data, error } = await supabase
       .from("leads")
       .select("count", { count: "exact", head: true });
@@ -36,8 +34,6 @@ async function testSupabaseConnection() {
       return false;
     }
 
-    console.log("✅ Supabase conectado com sucesso!");
-    console.log(`📊 Total de leads: ${data?.length || 0}`);
     return true;
   } catch (error) {
     console.error("❌ Erro na conexão Supabase:", error.message);
@@ -236,8 +232,6 @@ app.post("/api/leads", validateLead, async (req, res) => {
       });
     }
 
-    console.log(`✅ Novo lead cadastrado: ${name} (${email})`);
-
     res.json({
       success: true,
       message: "Lead cadastrada com sucesso!",
@@ -320,7 +314,6 @@ app.post("/api/zapier/webhook", async (req, res) => {
     const { event, data } = req.body;
 
     // Log the webhook event
-    console.log(`Zapier webhook received: ${event}`, data);
 
     res.json({
       success: true,
@@ -360,21 +353,16 @@ app.use((error, req, res, next) => {
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
-  console.log("SIGTERM received, shutting down gracefully");
   process.exit(0);
 });
 
 process.on("SIGINT", () => {
-  console.log("SIGINT received, shutting down gracefully");
   process.exit(0);
 });
 
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📱 Frontend: http://localhost:${PORT}`);
-  console.log(`🔗 API: http://localhost:${PORT}/api`);
-  console.log(`💾 Database: Supabase`);
 });
 
 module.exports = app;

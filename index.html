@@ -66,7 +66,7 @@
     />
 
     <!-- CSS -->
-    <link rel="stylesheet" href="styles.css?v=202501130230" />
+    <link rel="stylesheet" href="styles.css?v=202501130310" />
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -85,6 +85,32 @@
     </script>
   </head>
   <body>
+    <!-- Modal de Verificação de Idade -->
+    <div id="ageVerificationModal" class="age-modal-overlay">
+      <div class="age-modal-content">
+        <div class="age-modal-header">
+          <div class="age-modal-icon">🔞</div>
+          <h2 class="age-modal-title">Verificação de Idade</h2>
+        </div>
+        <div class="age-modal-body">
+          <p class="age-modal-message">
+            Este site é destinado exclusivamente a pessoas maiores de 18 anos.
+          </p>
+          <p class="age-modal-question">
+            Você confirma que tem mais de 18 anos?
+          </p>
+        </div>
+        <div class="age-modal-footer">
+          <button
+            class="age-modal-button age-modal-button-yes"
+            id="ageConfirmButton"
+          >
+            Sim, tenho mais de 18 anos
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
       <nav class="nav">
@@ -131,7 +157,7 @@
             <strong>Sem atravessadores. Sem comissões.</strong><br />
             Aqui, você anuncia do seu jeito, no seu tempo, com o seu valor.
           </p>
-          <button class="cta-button" onclick="scrollToForm()">
+          <button class="cta-button" id="heroCtaButton">
             👉 ENTRAR NA LISTA DE ESPERA
           </button>
         </div>
@@ -237,7 +263,7 @@
           resultados reais.
         </p>
         <div class="how-it-works-cta">
-          <button class="cta-button" onclick="scrollToForm()">
+          <button class="cta-button" id="howItWorksCtaButton">
             👉 entrar na lista de espera
           </button>
         </div>
@@ -314,7 +340,7 @@
             <strong>50% de desconto</strong> para quem se cadastrar antes da
             estreia!
           </p>
-          <button class="cta-button" onclick="scrollToForm()">
+          <button class="cta-button" id="pricingCtaButton">
             👉 GARANTIR DESCONTO AGORA
           </button>
         </div>
@@ -343,7 +369,7 @@
           </div>
         </div>
         <div class="security-cta">
-          <button class="cta-button" onclick="scrollToForm()">
+          <button class="cta-button" id="securityCtaButton">
             👉 entrar na lista de espera
           </button>
         </div>
@@ -460,7 +486,7 @@
           </p>
         </div>
         <div class="modal-footer">
-          <button class="modal-button" onclick="closeEmailExistsModal()">
+          <button class="modal-button" id="emailModalButton">
             Entendi, obrigada!
           </button>
         </div>
@@ -468,6 +494,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="script.js?v=202501130250"></script>
+    <script src="script.js?v=202501130340"></script>
   </body>
 </html>

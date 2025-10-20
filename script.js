@@ -40,6 +40,72 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+// Age verification modal functions
+function showAgeVerificationModal() {
+  const modal = document.getElementById("ageVerificationModal");
+  if (modal) {
+    modal.style.display = "flex";
+    document.body.classList.add("age-modal-active");
+  }
+}
+
+function closeAgeModal() {
+  const modal = document.getElementById("ageVerificationModal");
+  if (modal) {
+    modal.style.display = "none";
+    document.body.classList.remove("age-modal-active");
+
+    // User confirmed they are 18+
+    localStorage.setItem("ageVerified", "true");
+  }
+}
+
+// Check if user has already verified age
+function checkAgeVerification() {
+  const ageVerified = localStorage.getItem("ageVerified");
+  if (!ageVerified) {
+    showAgeVerificationModal();
+  }
+}
+
+// Initialize age verification on page load
+document.addEventListener("DOMContentLoaded", function () {
+  checkAgeVerification();
+
+  // Add event listener to age confirmation button
+  const ageConfirmButton = document.getElementById("ageConfirmButton");
+  if (ageConfirmButton) {
+    ageConfirmButton.addEventListener("click", function () {
+      closeAgeModal();
+    });
+  }
+
+  // Add event listeners to CTA buttons
+  const ctaButtons = [
+    "heroCtaButton",
+    "howItWorksCtaButton",
+    "pricingCtaButton",
+    "securityCtaButton",
+  ];
+
+  ctaButtons.forEach((buttonId) => {
+    const button = document.getElementById(buttonId);
+    if (button) {
+      button.addEventListener("click", function () {
+        scrollToForm();
+      });
+    }
+  });
+
+  // Add event listener to email modal button
+  const emailModalButton = document.getElementById("emailModalButton");
+  if (emailModalButton) {
+    emailModalButton.addEventListener("click", function () {
+      closeEmailExistsModal();
+    });
+  }
+});
+
 // Smooth scrolling and form handling
 document.addEventListener("DOMContentLoaded", function () {
   // Mobile menu toggle
