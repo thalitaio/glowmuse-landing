@@ -108,7 +108,6 @@ app.use(
   })
 );
 
-
 // Serve robots.txt
 app.get("/robots.txt", (req, res) => {
   res.type("text/plain");

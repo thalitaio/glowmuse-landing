@@ -39,11 +39,11 @@ ADMIN_EMAIL=thalita@glowmuse.com.br
 
 - **Framework Preset**: `Other`
 - **Root Directory**: `./` (raiz)
-- **Build Command**: `npm run build` (ou deixar vazio)
-- **Output Directory**: `./` (raiz)
+- **Build Command**: (deixar vazio - não necessário)
+- **Output Directory**: (deixar vazio - não necessário)
 - **Install Command**: `npm install`
 
-**⚠️ Importante**: Com o `vercel.json` simplificado, essas configurações serão aplicadas normalmente.
+**✅ Importante**: Sem `vercel.json`, a Vercel detecta automaticamente que é um projeto Node.js.
 
 ## 🚀 Deploy
 
@@ -196,6 +196,13 @@ curl https://seu-projeto.vercel.app/api/leads/count
 1. **Simplificar vercel.json**: Usar apenas `functions` em vez de `builds`
 2. **Configurações do dashboard**: Serão aplicadas normalmente
 3. **Redeploy**: Fazer novo deploy após correções
+
+### **Erro: "Function Runtimes must have a valid version"**
+**Causa**: Runtime inválido no vercel.json
+**Solução**:
+1. **Remover vercel.json**: A Vercel detecta automaticamente projetos Node.js
+2. **Configurações automáticas**: Deploy funcionará sem configuração manual
+3. **Redeploy**: Fazer novo deploy após remover vercel.json
 
 ### **Erro: Function timeout**
 ```json
