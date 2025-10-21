@@ -143,14 +143,17 @@ body {
     display: none;
     flex-direction: column;
     cursor: pointer;
+    z-index: 1001;
+    position: relative;
 }
 
 .nav-toggle span {
     width: 25px;
     height: 3px;
-    background: var(--dark-gray);
+    background: var(--primary-burgundy);
     margin: 3px 0;
     transition: 0.3s;
+    border-radius: 2px;
 }
 
 /* Hero Section */
@@ -1425,6 +1428,25 @@ body {
     .nav-menu .nav-link:hover {
         background: var(--light-cream);
         transform: translateX(5px);
+    }
+    
+    .nav-menu .nav-cta {
+        background: linear-gradient(135deg, var(--primary-burgundy), var(--deep-wine)) !important;
+        color: white !important;
+        margin: 20px 0;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 30px;
+        box-shadow: var(--shadow-light);
+        transition: all 0.3s ease;
+    }
+    
+    .nav-menu .nav-cta:hover {
+        background: linear-gradient(135deg, var(--deep-wine), var(--primary-burgundy)) !important;
+        color: white !important;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
     }
     
     .nav-toggle {

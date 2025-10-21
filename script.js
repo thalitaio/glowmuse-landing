@@ -125,6 +125,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const navToggle = document.querySelector(".nav-toggle");
   const navMenu = document.querySelector(".nav-menu");
 
+  // Function to close mobile menu
+  function closeMobileMenu() {
+    if (navMenu && navToggle) {
+      navMenu.classList.remove("active");
+      navToggle.classList.remove("active");
+    }
+  }
+
   if (navToggle && navMenu) {
     navToggle.addEventListener("click", function () {
       navMenu.classList.toggle("active");
@@ -132,11 +140,25 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Close mobile menu when clicking outside
+  document.addEventListener("click", function (event) {
+    if (navMenu && navToggle && navMenu.classList.contains("active")) {
+      const isClickInsideMenu = navMenu.contains(event.target);
+      const isClickOnToggle = navToggle.contains(event.target);
+
+      if (!isClickInsideMenu && !isClickOnToggle) {
+        closeMobileMenu();
+      }
+    }
+  });
+
   // Handle CTA links in navbar
   const ctaLinks = document.querySelectorAll('a[href="#contato"], .nav-cta');
   ctaLinks.forEach((link) => {
     link.addEventListener("click", function (e) {
       e.preventDefault();
+      // Close mobile menu if open
+      closeMobileMenu();
       scrollToForm();
     });
   });
@@ -146,6 +168,9 @@ document.addEventListener("DOMContentLoaded", function () {
   navLinks.forEach((link) => {
     link.addEventListener("click", function (e) {
       e.preventDefault();
+      // Close mobile menu if open
+      closeMobileMenu();
+
       const targetId = this.getAttribute("href");
       const targetSection = document.querySelector(targetId);
 
