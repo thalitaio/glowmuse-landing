@@ -180,6 +180,14 @@ curl https://seu-projeto.vercel.app/api/leads/count
 2. **Manter apenas `builds` e `routes`**
 3. **Redeploy**: Fazer novo deploy após correções
 
+### **Erro: CSS/JS não carregando (página sem estilo)**
+**Causa**: Arquivos estáticos não sendo servidos corretamente
+**Solução**:
+1. **Verificar vercel.json**: Deve ter rotas para arquivos estáticos
+2. **Verificar server.js**: Deve ter `express.static` configurado
+3. **Headers corretos**: CSS e JS devem ter Content-Type correto
+4. **Redeploy**: Fazer novo deploy após correções
+
 ### **Erro: Function timeout**
 ```json
 // vercel.json

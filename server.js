@@ -90,23 +90,32 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Serve static files
-app.use(
-  express.static(path.join(__dirname), {
-    maxAge: "1d",
-    etag: true,
-    setHeaders: (res, path) => {
-      if (path.endsWith(".svg")) {
-        res.setHeader("Content-Type", "image/svg+xml");
-      }
-      if (path.endsWith(".css")) {
-        res.setHeader("Content-Type", "text/css");
-      }
-      if (path.endsWith(".js")) {
-        res.setHeader("Content-Type", "application/javascript");
-      }
-    },
-  })
-);
+app.use(express.static(path.join(__dirname), {
+  maxAge: "1d",
+  etag: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith(".svg")) {
+      res.setHeader("Content-Type", "image/svg+xml");
+    }
+    if (path.endsWith(".css")) {
+      res.setHeader("Content-Type", "text/css");
+    }
+    if (path.endsWith(".js")) {
+      res.setHeader("Content-Type", "application/javascript");
+    }
+  },
+}));
+
+// Serve CSS and JS files with correct headers
+app.get("*.css", (req, res) => {
+  res.setHeader("Content-Type", "text/css");
+  res.sendFile(path.join(__dirname, req.path));
+});
+
+app.get("*.js", (req, res) => {
+  res.setHeader("Content-Type", "application/javascript");
+  res.sendFile(path.join(__dirname, req.path));
+});
 
 // Serve robots.txt
 app.get("/robots.txt", (req, res) => {
