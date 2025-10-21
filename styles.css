@@ -2103,6 +2103,8 @@ body {
     padding: 0 30px 30px 30px;
     display: flex;
     justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
 }
 
 .age-modal-button {
@@ -2202,6 +2204,7 @@ body {
     .age-modal-footer {
         padding: 0 20px 25px 20px;
         flex-direction: column;
+        gap: 20px;
     }
     
     .age-modal-button {

@@ -60,6 +60,11 @@ function closeAgeModal() {
   }
 }
 
+function handleAgeDenial() {
+  // User denied being 18+, keep modal open and do nothing
+  // The modal will remain visible and the user cannot access the site
+}
+
 // Check if user has already verified age
 function checkAgeVerification() {
   const ageVerified = localStorage.getItem("ageVerified");
@@ -77,6 +82,14 @@ document.addEventListener("DOMContentLoaded", function () {
   if (ageConfirmButton) {
     ageConfirmButton.addEventListener("click", function () {
       closeAgeModal();
+    });
+  }
+
+  // Add event listener to age denial button
+  const ageDenyButton = document.getElementById("ageDenyButton");
+  if (ageDenyButton) {
+    ageDenyButton.addEventListener("click", function () {
+      handleAgeDenial();
     });
   }
 
