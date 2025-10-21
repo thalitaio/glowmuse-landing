@@ -173,6 +173,13 @@ curl https://seu-projeto.vercel.app/api/leads/count
 2. **Verificar vercel.json**: Deve ter apenas `builds` e `routes`
 3. **Redeploy**: Fazer novo deploy após correções
 
+### **Erro: "The `functions` property cannot be used in conjunction with the `builds` property"**
+**Causa**: Conflito entre propriedades `functions` e `builds` no vercel.json
+**Solução**:
+1. **Remover propriedade `functions`** do vercel.json
+2. **Manter apenas `builds` e `routes`**
+3. **Redeploy**: Fazer novo deploy após correções
+
 ### **Erro: Function timeout**
 ```json
 // vercel.json
