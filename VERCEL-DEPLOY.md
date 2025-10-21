@@ -39,9 +39,11 @@ ADMIN_EMAIL=thalita@glowmuse.com.br
 
 - **Framework Preset**: `Other`
 - **Root Directory**: `./` (raiz)
-- **Build Command**: (deixar vazio - não necessário para Node.js)
-- **Output Directory**: (deixar vazio - não necessário para Node.js)
+- **Build Command**: `npm run build` (ou deixar vazio)
+- **Output Directory**: `./` (raiz)
 - **Install Command**: `npm install`
+
+**⚠️ Importante**: Com o `vercel.json` simplificado, essas configurações serão aplicadas normalmente.
 
 ## 🚀 Deploy
 
@@ -187,6 +189,13 @@ curl https://seu-projeto.vercel.app/api/leads/count
 2. **Verificar server.js**: Deve ter `express.static` configurado
 3. **Headers corretos**: CSS e JS devem ter Content-Type correto
 4. **Redeploy**: Fazer novo deploy após correções
+
+### **Warning: "Due to `builds` existing in your configuration file"**
+**Causa**: Conflito entre `vercel.json` e configurações do dashboard
+**Solução**:
+1. **Simplificar vercel.json**: Usar apenas `functions` em vez de `builds`
+2. **Configurações do dashboard**: Serão aplicadas normalmente
+3. **Redeploy**: Fazer novo deploy após correções
 
 ### **Erro: Function timeout**
 ```json
