@@ -190,6 +190,14 @@ curl https://seu-projeto.vercel.app/api/leads/count
 3. **Headers corretos**: CSS e JS devem ter Content-Type correto
 4. **Redeploy**: Fazer novo deploy após correções
 
+### **Erro: 404 (Not Found) em rotas da API**
+**Causa**: Vercel não reconhece rotas da API no server.js
+**Solução**:
+1. **Criar pasta `api/`**: Para rotas da API
+2. **Arquivos separados**: Cada endpoint em arquivo próprio
+3. **Estrutura correta**: `/api/leads.js`, `/api/leads/count.js`
+4. **Redeploy**: Fazer novo deploy após correções
+
 ### **Warning: "Due to `builds` existing in your configuration file"**
 **Causa**: Conflito entre `vercel.json` e configurações do dashboard
 **Solução**:
