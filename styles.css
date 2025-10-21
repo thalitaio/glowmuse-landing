@@ -8,6 +8,7 @@
 :root {
     /* Brand Colors - New Direct Commercial Palette */
     --primary-burgundy: #6E1F28;
+    --light-burgundy: #FFFFFF;
     --deep-wine: #5A1A22;
     --rich-gold: #CDAA6D;
     --warm-bronze: #B8860B;
@@ -353,6 +354,10 @@ body {
     text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     letter-spacing: -0.01em;
     position: relative;
+}
+
+.section-title.light {
+    color: var(--light-burgundy);
 }
 
 .section-title::after {
