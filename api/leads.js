@@ -2,16 +2,25 @@ const { createClient } = require("@supabase/supabase-js");
 const { body, validationResult } = require("express-validator");
 
 // Supabase client configuration
-const supabaseUrl = process.env.SUPABASE_URL || "https://owsplwuwjkklwnfajddj.supabase.co";
-const supabaseKey = process.env.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93c3Bsd3V3amtrbHduZmFqZGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4Nzg2MjgsImV4cCI6MjA3NjQ1NDYyOH0.saZai4dgFkZWbWBHCgMPtxrVkydBbUfQhQt1n4vj3Tk";
+const supabaseUrl =
+  process.env.SUPABASE_URL || "https://owsplwuwjkklwnfajddj.supabase.co";
+const supabaseKey =
+  process.env.SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93c3Bsd3V3amtrbHduZmFqZGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4Nzg2MjgsImV4cCI6MjA3NjQ1NDYyOH0.saZai4dgFkZWbWBHCgMPtxrVkydBbUfQhQt1n4vj3Tk";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Validation middleware
 const validateLead = [
-  body("name").trim().isLength({ min: 2 }).withMessage("Nome deve ter pelo menos 2 caracteres"),
+  body("name")
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage("Nome deve ter pelo menos 2 caracteres"),
   body("email").isEmail().normalizeEmail().withMessage("E-mail inválido"),
-  body("phone").optional().isMobilePhone("pt-BR").withMessage("Telefone inválido"),
+  body("phone")
+    .optional()
+    .isMobilePhone("pt-BR")
+    .withMessage("Telefone inválido"),
 ];
 
 export default async function handler(req, res) {
@@ -40,7 +49,10 @@ export default async function handler(req, res) {
     }
 
     const { name, email, phone } = req.body;
-    const ipAddress = req.headers["x-forwarded-for"] || req.connection.remoteAddress || "unknown";
+    const ipAddress =
+      req.headers["x-forwarded-for"] ||
+      req.connection.remoteAddress ||
+      "unknown";
 
     // Check if lead already exists
     const { data: existingLead, error: checkError } = await supabase
@@ -92,7 +104,6 @@ export default async function handler(req, res) {
       message: "Lead cadastrado com sucesso!",
       data: newLead,
     });
-
   } catch (error) {
     console.error("Erro no endpoint /api/leads:", error);
     return res.status(500).json({
