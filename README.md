@@ -1,6 +1,6 @@
 # GlowMuse Landing Page
 
-Landing page moderna e responsiva para captura de leads da GlowMuse, plataforma de anúncios para acompanhantes.
+Landing page moderna e responsiva para captura de leads da GlowMuse, site de anúncios para acompanhantes.
 
 ## 🚀 Características
 
